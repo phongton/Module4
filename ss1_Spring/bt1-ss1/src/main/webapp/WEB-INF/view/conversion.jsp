@@ -12,7 +12,7 @@
 </head>
 <body>
 <h2>Currency Converter</h2>
-<form action="conversion/change" >
+<form action="conversion/change" method="post">
     <label for="rate">Exchange Rate (USD to VND):</label>
     <input type="text" id="rate" name="rate" required><br><br>
     <label for="usd">Amount in USD:</label>

@@ -19,7 +19,7 @@
 </head>
 <body>
 <h3>Customer Information</h3>
-<form action="${pageContext.request.contextPath}/customer/update" method="post">
+    <form action="${pageContext.request.contextPath}/customer/update" method="post">
     <table>
         <tr>
             <td>Id</td>

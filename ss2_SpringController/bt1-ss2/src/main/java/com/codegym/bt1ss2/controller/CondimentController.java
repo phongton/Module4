@@ -27,7 +27,6 @@ public class CondimentController {
     @GetMapping("")
     public String condiment(Model model) {
         List<Condiment> condiments = service.listCondiments();
-        System.out.println(condiments);
         model.addAttribute("condiments", condiments);
         return "condiment";
     }

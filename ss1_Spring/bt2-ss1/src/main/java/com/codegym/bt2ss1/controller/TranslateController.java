@@ -1,5 +1,6 @@
 package com.codegym.bt2ss1.controller;
 
+import com.codegym.bt2ss1.repository.IRepo;
 import com.codegym.bt2ss1.repository.Repo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TranslateController {
 
     @Autowired
-    private Repo repo;
+    private IRepo repo;
     @GetMapping("/translate")
     public String translate() {
         return "translate";

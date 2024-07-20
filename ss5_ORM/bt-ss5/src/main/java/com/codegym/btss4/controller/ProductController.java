@@ -1,6 +1,7 @@
 package com.codegym.btss4.controller;
 
 import com.codegym.btss4.model.Product;
+import com.codegym.btss4.service.IProductService;
 import com.codegym.btss4.service.impl.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,7 @@ import java.util.List;
 @RequestMapping("/home")
 public class ProductController {
 @Autowired
-private ProductService service;
+private IProductService service;
     @GetMapping
     public String home(Model model) {
         List<Product> products=service.findAll();

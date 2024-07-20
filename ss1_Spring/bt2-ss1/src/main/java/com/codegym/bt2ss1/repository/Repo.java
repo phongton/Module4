@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.Map;
 @Repository
-public class Repo {
+public class Repo implements IRepo{
 
     private static Map<String,String> word = new HashMap<>();
     static {
@@ -13,7 +13,7 @@ public class Repo {
         word.put("book", "quyển sách");
         word.put("computer", "máy tính");
     }
-
+    @Override
     public String findMeaning(String words) {
         if (word.containsKey(words)) {
             String value = word.get(words);

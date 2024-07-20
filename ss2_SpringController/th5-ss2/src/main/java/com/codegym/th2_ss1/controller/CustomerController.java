@@ -19,7 +19,7 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     private ICustomerService service;
-    @GetMapping("/")
+    @GetMapping()
     public String showList(Model model) {
         List<Customer> customers = service.getCustomers();
         model.addAttribute("customers", customers);
