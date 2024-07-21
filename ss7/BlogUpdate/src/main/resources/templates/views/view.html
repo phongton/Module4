@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="/views/layout :: head">
+  <title>DetailCustomer</title>
+</head>
+<body>
+<h3>View Customer</h3>
+<p>
+  <a th:href="@{/home}">
+    Back to customer list
+  </a>
+</p>
+<div id="form">
+  <div class="cus-detail">
+    <label>Title:</label>
+    <label th:text="${post.title}"></label>
+  </div>
+  <div class="cus-detail">
+    <label>Content:</label>
+    <label th:text="${post.content}"></label>
+  </div>
+  <div class="cus-detail">
+    <label>Description:</label>
+    <textarea th:text="${post.description}"></textarea>
+  </div>
+  <div class="cus-detail">
+    <label>Author:</label>
+    <label th:text="${post.author}"></label>
+  </div>
+  <div class="cus-detail">
+    <label>Category:</label>
+    <label th:text="${post.category}"></label>
+  </div>
+</div>
+<footer th:replace="/views/layout :: footer"></footer>
+</body>
+</html>
