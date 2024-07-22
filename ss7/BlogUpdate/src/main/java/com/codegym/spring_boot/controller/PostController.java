@@ -5,7 +5,9 @@ import com.codegym.spring_boot.service.IPostService;
 import com.codegym.spring_boot.service.impl.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,11 +25,20 @@ public class PostController {
     private IPostService postService;
 
     @GetMapping
-    public String home(@PageableDefault(value = 3) Pageable pageable, Model model) {
+    public String home(@RequestParam(value = "category",defaultValue = "")String category,@RequestParam(value = "page", defaultValue = "0")int page, Model model) {
         List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
         model.addAttribute("categoryName", categoryName);
-        Page<Post> posts = postService.getPostsPage(pageable);
+        Sort sort = Sort.by(Sort.Direction.DESC, "category");
+        Page<Post> posts = postService.findAllCategoriesPage(category, PageRequest.of(page,3,sort));
         model.addAttribute("posts", posts);
+        model.addAttribute("category", category);
+        return "views/home";
+    }
+    @GetMapping("/sort")
+    public String sort(@RequestParam(name = "field") Optional<String> field, Model model) {
+        Sort sort = Sort.by(Sort.Direction.DESC, field.orElse("title"));
+        List<Post> list=postService.findAll(sort);
+        model.addAttribute("posts", list);
         return "views/home";
     }
     @GetMapping("/findTime")
@@ -39,14 +50,6 @@ public class PostController {
         return "views/home";
     }
 
-    @GetMapping("/findCategory")
-    public String findCategory(@RequestParam("category")String category,@PageableDefault(value = 3) Pageable pageable, Model model) {
-        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
-        model.addAttribute("categoryName", categoryName);
-        Page<Post> posts = postService.findAllCategoriesPage(category,pageable);
-        model.addAttribute("posts", posts);
-        return "views/home";
-    }
 
     @GetMapping("/create")
     public String create( Model model) {
@@ -59,12 +62,15 @@ public class PostController {
 
     @PostMapping("/save")
     public String save(Post post) {
+
         postService.savePost(post);
         return "redirect:/home";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
+        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
+        model.addAttribute("categoryName", categoryName);
         Post posts = postService.findPostById(id);
         model.addAttribute("post", posts);
         return "views/update";

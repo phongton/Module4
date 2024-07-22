@@ -27,6 +27,16 @@
         <span th:text="${message}"></span>
     </div>
 </div>
+<form th:action="@{/home/findTime}" method="get">
+    <select id="field" name="field" >
+        <option value="title">Title</option>
+        <option value="content">Content</option>
+        <option value="author">Author</option>
+        <option value="createdAt">Time</option>
+        <option value="category">Category</option>
+    </select>
+    <button type="submit">Sort</button>
+</form>
 
 <table id="customers">
     <thead>
@@ -36,7 +46,7 @@
         <th>Content</th>
         <th>Author</th>
         <th>Category
-            <form th:action="@{/home/findCategory}" method="get">
+            <form th:action="@{/home}" method="get">
                 <select id="category" name="category" >
                     <option th:each="category : ${categoryName}" th:value="${category}" th:text="${category}"></option>
                 </select>
@@ -103,9 +113,9 @@
     </tr>
     </tbody>
 </table>
-<a th:if="${posts.hasPrevious()}" th:href="@{'/home'(page=${posts.number - 1})}">Previous</a>
+<a th:if="${posts.hasPrevious()}" th:href="@{'/home'(page=${posts.number - 1}, category=${category})}">Previous</a>
 <span th:text="${posts.number + 1}"></span>/<span th:text="${posts.totalPages}"></span>
-<a th:if="${posts.hasNext()}" th:href="@{'/home'(page=${posts.number + 1})}">Next</a>
+<a th:if="${posts.hasNext()}" th:href="@{'/home'(page=${posts.number + 1}, category=${category})}">Next</a>
 
 <footer th:replace="/views/layout :: footer"></footer>
 </body>
