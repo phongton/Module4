@@ -37,7 +37,7 @@
 
             <label for="category">Category</label>
             <select id="category" th:field="*{category}">
-                <option th:each="category : ${categoryName}" th:value="${category}" th:text="${category}"></option>
+                <option th:each="category : ${categoryName}" th:value="${category.getId()}" th:text="${category.getName()}"></option>
             </select>
         </div>
         <input type="submit" value="Edit"/>

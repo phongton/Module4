@@ -53,8 +53,9 @@ public class PostService implements IPostService {
     }
 
     @Override
-    public Page<Post> findAllCategoriesPage(String category, Pageable pageable) {
-        return postRepository.findAllByCategoryContaining(category, pageable);
+    public Page<Post> findAllCategoriesPage(int category, Pageable pageable) {
+        Long categoryId = (long) category;
+        return postRepository.findAllByCategoryId(categoryId, pageable);
     }
 
     @Override

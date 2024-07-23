@@ -27,7 +27,7 @@
         <span th:text="${message}"></span>
     </div>
 </div>
-<form th:action="@{/home/findTime}" method="get">
+<form th:action="@{/home/sort}" method="get">
     <select id="field" name="field" >
         <option value="title">Title</option>
         <option value="content">Content</option>
@@ -48,7 +48,7 @@
         <th>Category
             <form th:action="@{/home}" method="get">
                 <select id="category" name="category" >
-                    <option th:each="category : ${categoryName}" th:value="${category}" th:text="${category}"></option>
+                    <option th:each="category : ${categories}" th:value="${category.getId()}" th:text="${category.getName()}"></option>
                 </select>
                 <button type="submit">Search</button>
             </form>
@@ -69,7 +69,7 @@
         <td th:text="${post.title}"></td>
         <td th:text="${post.content}"></td>
         <td th:text="${post.author}"></td>
-        <td th:text="${post.category}"></td>
+        <td th:text="${post.category.getName()}"></td>
         <td th:text="${post.createdAt}"></td>
 
         <td><a th:href="@{/home/{id}/edit(id=${post.getId()})}">edit</a></td>

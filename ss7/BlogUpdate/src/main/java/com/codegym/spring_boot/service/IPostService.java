@@ -16,7 +16,7 @@ public interface IPostService {
     void deletePost(Long id);
    Post findPostById(Long id);
    Page<Post> getPostsPage(Pageable pageable);
-   Page<Post> findAllCategoriesPage(String category,Pageable pageable);
+   Page<Post> findAllCategoriesPage(int category,Pageable pageable);
     Page<Post> findAllByCreatedAtDesc(Pageable pageable);
     List<Post> findAll(Sort sort);
 }

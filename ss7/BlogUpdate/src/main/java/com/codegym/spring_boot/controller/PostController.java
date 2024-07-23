@@ -1,7 +1,9 @@
 package com.codegym.spring_boot.controller;
 
+import com.codegym.spring_boot.model.Category;
 import com.codegym.spring_boot.model.Post;
 import com.codegym.spring_boot.service.IPostService;
+import com.codegym.spring_boot.service.impl.CategoryService;
 import com.codegym.spring_boot.service.impl.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -23,15 +26,25 @@ public class PostController {
 
     @Autowired
     private IPostService postService;
+    @Autowired
+    private CategoryService categoryService;
 
     @GetMapping
-    public String home(@RequestParam(value = "category",defaultValue = "")String category,@RequestParam(value = "page", defaultValue = "0")int page, Model model) {
-        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
-        model.addAttribute("categoryName", categoryName);
-        Sort sort = Sort.by(Sort.Direction.DESC, "category");
-        Page<Post> posts = postService.findAllCategoriesPage(category, PageRequest.of(page,3,sort));
-        model.addAttribute("posts", posts);
+    public String home(@RequestParam(value = "category",defaultValue = "0")int category,
+                       @RequestParam(value = "page", defaultValue = "0")int page,
+                       Model model) {
+        List<Category> categories= categoryService.getAllCategories();
+        Sort sort = Sort.by( "category").descending();
+        Page<Post> posts;
+        if(category==0){
+            posts=postService.getPostsPage(PageRequest.of(page,3,sort));
+
+        }else {
+            posts=postService.findAllCategoriesPage(category, PageRequest.of(page,3,sort));
+        }
         model.addAttribute("category", category);
+        model.addAttribute("posts", posts);
+        model.addAttribute("categories", categories);
         return "views/home";
     }
     @GetMapping("/sort")
@@ -42,35 +55,35 @@ public class PostController {
         return "views/home";
     }
     @GetMapping("/findTime")
-    public String findTime(@PageableDefault(value = 3) Pageable pageable, Model model) {
-        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
-        model.addAttribute("categoryName", categoryName);
+    public String findTime(@RequestParam(value = "category",defaultValue = "0")int category,@PageableDefault(value = 3) Pageable pageable, Model model) {
         Page<Post> posts = postService.findAllByCreatedAtDesc(pageable);
+        model.addAttribute("category", categoryService.getAllCategories());
+        model.addAttribute("category", category);
         model.addAttribute("posts", posts);
         return "views/home";
     }
 
 
-    @GetMapping("/create")
-    public String create( Model model) {
-        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
-        model.addAttribute("categoryName", categoryName);
-
-        model.addAttribute("post", new Post());
-        return "views/create";
-    }
-
     @PostMapping("/save")
-    public String save(Post post) {
-
+    public String save(@ModelAttribute("post")Post post, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "views/create";
+        }
         postService.savePost(post);
         return "redirect:/home";
     }
 
+    @GetMapping("/create")
+    public String create(Model model) {
+        model.addAttribute("post", new Post());
+        model.addAttribute("category",categoryService.getAllCategories());
+        return "views/create";
+    }
+
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") Long id, Model model) {
-        List<String> categoryName = Arrays.asList("Hành động", "Kiếm hiệp", "Trinh thám", "Hàn xẻng");
-        model.addAttribute("categoryName", categoryName);
+
+        model.addAttribute("categoryName", categoryService.getAllCategories());
         Post posts = postService.findPostById(id);
         model.addAttribute("post", posts);
         return "views/update";

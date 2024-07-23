@@ -11,7 +11,7 @@ import java.util.List;
 public interface IPostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByAuthorContaining(String author);
     Page<Post> findAll(Pageable pageable);
-    Page<Post> findAllByCategoryContaining(String category, Pageable pageable);
+    Page<Post> findAllByCategoryId(Long category, Pageable pageable);
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
     List<Post>findAll(Sort sort);
 }

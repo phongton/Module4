@@ -18,8 +18,10 @@ public class Post {
     private String content;
     private String author;
     private String description;
-    private String category;
     private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -28,24 +30,15 @@ public class Post {
     public Post() {
     }
 
-    public Post(Long id, String title, String content, String author, String description, String category, LocalDateTime createdAt) {
+    public Post(Long id, String title, String content, String author, String description, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
         this.description = description;
-        this.category = category;
         this.createdAt = createdAt;
     }
 
-    public Post(Long id, String title, String content, String author, String description, String category) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.author = author;
-        this.description = description;
-        this.category = category;
-    }
 
     public Post(Long id, String content, String title, String author, String description) {
         this.id = id;
