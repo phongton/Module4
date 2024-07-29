@@ -18,22 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 public class RestPostController {
 
     @Autowired
     private IPostService service;
 
-    @Autowired
-    private ICategoryService categoryService;
-//Xem danh sách các category
-    @GetMapping
-    public ResponseEntity<?> findAllPostByCategory() {
-        List<Category> categories = categoryService.getAllCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
-    }
+
+
 //Xem danh sách tất cả bài viết
-    @GetMapping("/findAll")
+    @GetMapping
     public ResponseEntity<?> findAllPost() {
         List<Post> post = service.getPosts();
         return new ResponseEntity<>(post,HttpStatus.OK);
@@ -42,6 +36,9 @@ public class RestPostController {
     @GetMapping("{categoryId}")
     public ResponseEntity<?> getPostByCategoryId(@PathVariable int categoryId, Pageable pageable) {
         Page <Post> posts = service.findAllCategoriesPage(categoryId,pageable);
+        if (posts.getContent().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(posts,HttpStatus.OK);
     }
     //Xem chi tiết 1 bài viết
