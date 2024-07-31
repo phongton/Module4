@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="/views/layout :: head">
+    <title>ListBlog</title>
+
+
+</head>
+
+<body>
+<h3><a th:href="@{/home}">Blog</a> </h3>
+<!--<form class="d-flex" th:action="@{/home/search}" method="get">-->
+<!--    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="author">-->
+<!--    <button class="btn btn-outline-success" type="submit">Search</button>-->
+<!--</form>-->
+<div class="d-flex" id="search" >
+    <input id="author" class="form-control me-2" type="text" placeholder="Search" aria-label="Search" >
+    <button id="searchButton" class="btn btn-outline-success" type="button" >Search</button>
+</div>
+<p>
+    <a th:href="@{/home/create}">
+        Add new Blog
+    </a>
+</p>
+
+<div class="notify">
+    <div th:if="${message}">
+        <span th:text="${message}"></span>
+    </div>
+</div>
+<form th:action="@{/home/sort}" method="get">
+    <select id="field" name="field" >
+        <option value="title">Title</option>
+        <option value="content">Content</option>
+        <option value="author">Author</option>
+        <option value="createdAt">Time</option>
+        <option value="category">Category</option>
+    </select>
+    <button type="submit">Sort</button>
+</form>
+<div id="display">
+<table id="customers">
+    <thead>
+    <tr>
+        <th>STT</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Author</th>
+        <th>Category
+            <form th:action="@{/home}" method="get">
+                <select id="category" name="category" >
+                    <option th:each="category : ${categories}" th:value="${category.getId()}" th:text="${category.getName()}"></option>
+                </select>
+                <button type="submit">Search</button>
+            </form>
+        </th>
+        <th>Created Time :
+            <form th:action="@{/home/findTime}" method="get">
+                <button type="submit">Sort by Time</button>
+            </form>
+        </th>
+        <th>Edit</th>
+        <th>Delete</th>
+        <th>View</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="post,productStat : ${posts}">
+        <td th:text="${productStat.count}"></td>
+        <td th:text="${post.title}"></td>
+        <td th:text="${post.content}"></td>
+        <td th:text="${post.author}"></td>
+        <td th:text="${post.category.getName()}"></td>
+        <td th:text="${post.createdAt}"></td>
+
+        <td><a th:href="@{/home/{id}/edit(id=${post.getId()})}">edit</a></td>
+        <!--        <td><a th:href="@{/home/{id}/delete(id=${product.getId()})}">delete</a></td>-->
+        <td>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                    th:data-bs-target="'#exampleModal'+${post.getId()}">
+                Delete
+            </button>
+            <div class="modal fade" th:id="'exampleModal'+${post.getId()}" tabindex="-1"
+                 aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">You want to delete this product <span
+                                    th:text="${post.getTitle()}"></span></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        </div>
+                        <div class="modal-footer">
+                            <form th:action="@{'/home/' + ${post.getId()} + '/delete'}" method="post">
+                                <input type="hidden" name="id" th:value="${post.getId()}">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-danger">Delete product</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td>
+            <button class="btn btn-primary"><a style="color: #dddddd" th:href="@{/home/{id}/view(id=${post.getId()})}">view</a>
+            </button>
+        </td>
+
+
+        <!-- Modal -->
+
+    </tr>
+    </tbody>
+</table>
+    <button id="loadMore" type="button">LoadMore</button>
+</div>
+<a th:if="${posts.hasPrevious()}" th:href="@{'/home'(page=${posts.number - 1}, category=${category})}">Previous</a>
+<span th:text="${posts.number + 1}"></span>/<span th:text="${posts.totalPages}"></span>
+<a th:if="${posts.hasNext()}" th:href="@{'/home'(page=${posts.number + 1}, category=${category})}">Next</a>
+
+<footer th:replace="/views/layout :: footer"></footer>
+
+</body>
+<script>
+    $('#searchButton').click(function(){
+        const author=document.getElementById("author").value;
+
+        $.ajax({
+            url:`http://localhost:8080/api/posts/search`,
+            type : "GET",
+            data:{author:author},
+            success:function (data){
+                updateTable(data)
+
+            },
+            error: function(err){
+                alert("Lỗi")
+                console.log(err);
+            }
+        })
+    })
+
+    function updateTable(posts) {
+        // Xóa dữ liệu hiện tại trong bảng
+        $('#customers tbody').empty();
+
+        // Thêm dữ liệu mới vào bảng
+        posts.forEach((post, index) => {
+            $('#customers tbody').append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${post.title}</td>
+                    <td>${post.content}</td>
+                    <td>${post.author}</td>
+                    <td>${post.category.name}</td>
+                    <td>${post.createdAt}</td>
+
+                    <td><a href="/home/${post.id}/edit">edit</a></td>
+                    <td>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal${post.id}">
+                            Delete
+                        </button>
+                        <div class="modal fade" id="exampleModal${post.id}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">You want to delete this product ${post.title}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <form action="/home/${post.id}/delete" method="post">
+                                            <input type="hidden" name="id" value="${post.id}">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-danger">Delete product</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary"><a style="color: #dddddd" href="/home/${post.id}/view">view</a></button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+    $(document).ready(function (){
+        let currentPage = 1;
+        let pageSize = 3 ;
+        function loadPost(page){
+            $.ajax({
+                url: 'http://localhost:8080/api/posts/page?page='+page+'&size='+pageSize,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    if (page === 1) {
+                        $('#display tbody').empty()
+                    }
+
+                    if (data.content.length === 0 && page === 1) {
+                        $('#customers tbody').html('<tr><td colspan="9">Không có bài viết nào.</td></tr>');
+                        $('#loadMore').hide();
+                        return;
+                    } else if (data.content.length === 0) {
+                        $('#loadMore').text('Không còn bài viết nào để tải thêm').prop('disabled', true);
+                        return;
+                    }
+                    let postsHtml = '';
+
+                    for (let i = 0; i < data.content.length; i++) {
+                        let blog = data.content[i];
+                        postsHtml += `
+                        <tr>
+                            <td>${(currentPage - 1) * pageSize + i + 1}</td>
+                            <td>${blog.title}</td>
+                            <td>${blog.content}</td>
+                            <td>${blog.author}</td>
+                            <td>${blog.category.name}</td>
+                            <td>${blog.createdAt}</td>
+                            <td><a class="btn btn-warning" href="blog/${blog.id}/edit">Edit</a></td>
+                            <td><a class="btn btn-danger" href="blog/${blog.id}/delete">Delete</a></td>
+                            <td><a class="btn btn-info" href="blog/${blog.id}/view">Blog Detail</a></td>
+                        </tr>`;
+                    }
+
+                    $('#customers tbody').append(postsHtml);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Có lỗi xảy ra: ', error);
+                    $('#customers tbody').append('<tr><td colspan="9">Đã xảy ra lỗi khi tải thêm bài viết.</td></tr>');
+                }
+            });
+        }
+
+
+        $('#loadMore').on('click', function() {
+            currentPage++;
+            loadPost(currentPage);
+        });
+    });
+
+
+</script>
+</html>
